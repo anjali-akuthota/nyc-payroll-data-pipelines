@@ -1,1 +1,105 @@
-Azure Data Factory project for NYC Payroll Analytics
+NYC Payroll Data Integration using Azure
+Project Overview
+
+This project builds an end-to-end data integration and analytics pipeline for the City of New York payroll data using Azure services.
+The goal is to analyze how payroll and overtime costs are distributed across city agencies and make the aggregated data available for analytics using Azure Synapse Analytics.
+
+The solution uses Azure Data Factory to ingest, transform, and aggregate payroll data from Azure Data Lake Gen2 into Azure SQL Database, and finally exposes summarized data through Synapse external tables.
+
+Architecture Overview
+
+Data Flow:
+
+Azure Data Lake Gen2 (CSV files)
+→ Azure Data Factory (Data Flows & Pipelines)
+→ Azure SQL Database (Staging & Summary tables)
+→ Azure Data Lake Gen2 (dirstaging)
+→ Azure Synapse Analytics (External Table)
+
+Azure Services Used
+
+Azure Data Lake Storage Gen2 – Source and staging storage
+
+Azure Data Factory (ADF) – Data ingestion, transformation, orchestration
+
+Azure SQL Database – Master, transaction, and summary tables
+
+Azure Synapse Analytics (Serverless SQL Pool) – Analytics using external tables
+
+GitHub – Version control for ADF artifacts
+
+Source Data
+
+The source data consists of CSV files stored in Azure Data Lake Gen2:
+
+Master Data
+
+EmpMaster.csv
+
+AgencyMaster.csv
+
+TitleMaster.csv
+
+Payroll Data
+
+nycpayroll_2020.csv
+
+nycpayroll_2021.csv
+
+Data Model
+SQL Tables Created
+
+NYC_Payroll_EMP_MD
+
+NYC_Payroll_AGENCY_MD
+
+NYC_Payroll_TITLE_MD
+
+NYC_Payroll_Data_2020
+
+NYC_Payroll_Data_2021
+
+NYC_Payroll_Summary
+
+Data Flows
+Master Data Flows
+
+Load Employee, Agency, and Title master data from Data Lake to SQL Database
+
+Payroll Data Flows
+
+Load 2020 and 2021 payroll data from Data Lake to SQL Database
+
+Aggregation Data Flow
+
+Union payroll data from 2020 and 2021
+
+Calculate TotalPaid = RegularGrossPaid + TotalOTPaid + TotalOtherPay
+
+Aggregate by AgencyName and FiscalYear
+
+Write results to:
+
+SQL summary table
+
+Data Lake dirstaging folder
+
+Pipeline Orchestration
+
+The Azure Data Factory pipeline executes data flows in the following order:
+
+Master data flows (run in parallel)
+
+Payroll data flows (run after master data)
+
+Aggregation data flow (runs last)
+
+All pipeline activities are implemented using Execute Data Flow activities.
+
+Data Validation
+
+Verified summary data in Azure SQL Database
+
+Verified files created in Data Lake Gen2 (dirstaging)
+
+Queried aggregated results using Synapse external table
